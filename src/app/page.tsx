@@ -44,16 +44,14 @@ export default function Home() {
         if (view === "intro") {
           setShowIntro(true);
           setShowIdentitySelector(false);
-        } else if (view === "selector") {
-          setShowIntro(false);
-          setShowIdentitySelector(true);
         } else if (personaParam && ["recruiter", "client", "visitor", "all"].includes(personaParam)) {
           setShowIntro(false);
           setShowIdentitySelector(false);
           setActivePersona(personaParam);
-        } else if (sessionStorage.getItem("skt_intro_seen") === "true") {
+        } else if (sessionStorage.getItem("skt_intro_seen") === "true" || view === "selector") {
           setShowIntro(false);
           setShowIdentitySelector(false);
+          setActivePersona("all");
         }
       } catch {
         // Ignored
@@ -96,34 +94,36 @@ export default function Home() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
-  // A. ENTER MY WORLD →: allow sequence to complete & transition smoothly to the Identity Selector
+  // A. ENTER MY WORLD →: immediately transition directly to All Works (Complete Portfolio)
   const handleEnterWorld = () => {
     try {
       sessionStorage.setItem("skt_intro_seen", "true");
     } catch {
       // Ignored
     }
+    setActivePersona("all");
     setShowIntro(false);
-    setShowIdentitySelector(true);
+    setShowIdentitySelector(false);
     try {
-      window.history.pushState({ view: "selector" }, "", "?view=selector");
+      window.history.pushState({ persona: "all" }, "", window.location.pathname);
     } catch {
       // Ignored
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // B. SKIP INTRO: immediately stop sequence and transition directly to the Identity Selector
+  // B. SKIP INTRO: immediately stop sequence and transition directly to All Works (Complete Portfolio)
   const handleSkipIntro = () => {
     try {
       sessionStorage.setItem("skt_intro_seen", "true");
     } catch {
       // Ignored
     }
+    setActivePersona("all");
     setShowIntro(false);
-    setShowIdentitySelector(true);
+    setShowIdentitySelector(false);
     try {
-      window.history.pushState({ view: "selector" }, "", "?view=selector");
+      window.history.pushState({ persona: "all" }, "", window.location.pathname);
     } catch {
       // Ignored
     }
