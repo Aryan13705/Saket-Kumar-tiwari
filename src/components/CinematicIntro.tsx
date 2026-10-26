@@ -11,13 +11,9 @@ interface CinematicIntroProps {
 }
 
 export default function CinematicIntro({ onComplete, onEnter, onSkip }: CinematicIntroProps) {
-  // Check user preference for reduced motion
-  const [isReducedMotion] = useState<boolean>(() => {
-    if (typeof window !== "undefined") {
-      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    }
-    return false;
-  });
+  // Initial state is deterministic across SSR and client to prevent hydration mismatch
+  const [isReducedMotion, setIsReducedMotion] = useState<boolean>(false);
+  const [scene, setScene] = useState<number>(1);
 
   // Track active timer IDs to cancel immediately upon Skip Intro
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -29,12 +25,15 @@ export default function CinematicIntro({ onComplete, onEnter, onSkip }: Cinemati
   // 4: Camera pullback to full portrait (5–7s)
   // 5: Film title typography & headline reveal (6.5–9s)
   // 6: ENTER MY WORLD CTA activation (9–12s)
-  const [scene, setScene] = useState<number>(() => {
-    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return 6;
-    }
-    return 1;
-  });
+  useEffect(() => {
+    const checkMotion = setTimeout(() => {
+      if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        setIsReducedMotion(true);
+        setScene(6);
+      }
+    }, 0);
+    return () => clearTimeout(checkMotion);
+  }, []);
 
   useEffect(() => {
     if (isReducedMotion) return;

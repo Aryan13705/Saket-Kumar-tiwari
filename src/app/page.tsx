@@ -28,49 +28,40 @@ export default function Home() {
   // 1. Cinematic 8-12s establishing sequence (default on initial visit unless already seen in session)
   // 2. Netflix-style identity selector (after ENTER MY WORLD or SKIP INTRO)
   // 3. Personalized or complete portfolio presentation
-  const [showIntro, setShowIntro] = useState<boolean>(() => {
-    if (typeof window !== "undefined") {
+  // Deterministic initial state across SSR and client initial render to prevent React hydration mismatches
+  const [showIntro, setShowIntro] = useState<boolean>(true);
+  const [showIdentitySelector, setShowIdentitySelector] = useState<boolean>(false);
+  const [activePersona, setActivePersona] = useState<PersonaType>("all");
+
+  // Synchronize client-specific state (sessionStorage, URL query params) once mounted on client
+  useEffect(() => {
+    const syncClientState = setTimeout(() => {
       try {
         const url = new URL(window.location.href);
         const view = url.searchParams.get("view");
-        const persona = url.searchParams.get("persona");
-        if (view === "intro") return true;
-        if (view === "selector" || persona) return false;
-        if (sessionStorage.getItem("skt_intro_seen") === "true") return false;
-      } catch {
-        // Ignored
-      }
-    }
-    return true;
-  });
-
-  const [showIdentitySelector, setShowIdentitySelector] = useState<boolean>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const url = new URL(window.location.href);
-        const view = url.searchParams.get("view");
-        if (view === "selector") return true;
-      } catch {
-        // Ignored
-      }
-    }
-    return false;
-  });
-
-  const [activePersona, setActivePersona] = useState<PersonaType>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const url = new URL(window.location.href);
         const personaParam = url.searchParams.get("persona") as PersonaType | null;
-        if (personaParam && ["recruiter", "client", "visitor", "all"].includes(personaParam)) {
-          return personaParam;
+
+        if (view === "intro") {
+          setShowIntro(true);
+          setShowIdentitySelector(false);
+        } else if (view === "selector") {
+          setShowIntro(false);
+          setShowIdentitySelector(true);
+        } else if (personaParam && ["recruiter", "client", "visitor", "all"].includes(personaParam)) {
+          setShowIntro(false);
+          setShowIdentitySelector(false);
+          setActivePersona(personaParam);
+        } else if (sessionStorage.getItem("skt_intro_seen") === "true") {
+          setShowIntro(false);
+          setShowIdentitySelector(false);
         }
       } catch {
         // Ignored
       }
-    }
-    return "all";
-  });
+    }, 0);
+
+    return () => clearTimeout(syncClientState);
+  }, []);
 
   // Real browser back and forward navigation handling via popstate
   useEffect(() => {
