@@ -1,0 +1,130 @@
+@import "tailwindcss";
+@import "./originkit-section-theme.css";
+@source "../components/originkit";
+
+@theme {
+  --font-serif: var(--font-serif), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
+  
+  --color-ivory: #F4F0E8;
+  --color-ivory-warm: #FAF7F2;
+  --color-stone-surface: #EDE8DE;
+  --color-stone-card: #E5DFD4;
+  --color-stone-border: #D7D0C4;
+  --color-stone-border-subtle: #E2DDD4;
+  
+  --color-charcoal: #111210;
+  --color-charcoal-nearblack: #171815;
+  --color-charcoal-soft: #242522;
+  --color-charcoal-muted: #595C62;
+  --color-charcoal-light: #B8B5AE;
+  
+  --color-bronze: #B79A6B;
+  --color-bronze-hover: #9E8255;
+  --color-bronze-soft: #EFE8DC;
+  --color-bronze-light: #F7F3EB;
+  --color-olive: #5B6652;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color-scheme: light;
+  }
+
+  body {
+    background-color: var(--color-ivory);
+    color: var(--color-charcoal);
+    font-family: var(--font-sans);
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-serif);
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Custom architectural utilities */
+.hairline-b {
+  border-bottom: 1px solid rgba(226, 221, 212, 0.85);
+}
+
+.hairline-t {
+  border-top: 1px solid rgba(226, 221, 212, 0.85);
+}
+
+.hairline-l {
+  border-left: 1px solid rgba(226, 221, 212, 0.85);
+}
+
+.hairline-r {
+  border-right: 1px solid rgba(226, 221, 212, 0.85);
+}
+
+.hairline-all {
+  border: 1px solid rgba(226, 221, 212, 0.85);
+}
+
+/* Architectural grid pattern */
+.bg-grid-architectural {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(148, 120, 84, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 120, 84, 0.04) 1px, transparent 1px);
+}
+
+/* Accessible focus visible states */
+:focus-visible {
+  outline: 2px solid var(--color-bronze);
+  outline-offset: 3px;
+}
+
+/* Smooth restrained animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F4EFEA;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C8BFB2;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #947854;
+}
+
+/* Respect user's reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
